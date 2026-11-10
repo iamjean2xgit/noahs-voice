@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Noah's Voice - AAC Communication Board</title>
+  <style>
+    :root {
+      --primary-blue: #0288d1;
+      --card-bg: #ffffff;
+      --text-dark: #1e293b;
+      --font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 45%, #bae6fd 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      color: var(--text-dark);
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .noah-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #fed7aa;
+      border: 3px solid #f97316;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #0284c7;
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    .brand-bubble {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid #bae6fd;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 2px;
+      border: 2px solid #cbd5e1;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 18px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: #64748b;
+      font-family: inherit;
+    }
+
+    .lang-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .sos-header-btn {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: 2px solid #fee2e2;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+      animation: pulse-sos 2s infinite;
+      font-family: inherit;
+    }
+
+    @keyframes pulse-sos {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .icon-btn {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 64px - 82px);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 140px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      overflow-y: auto;
+    }
+
+    .category-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 4px;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background: #ffffff;
+      color: #334155;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      gap: 4px;
+    }
+
+    .category-btn .cat-icon {
+      font-size: 1.4rem;
+    }
+
+    .category-btn.active {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      color: #0284c7;
+      transform: scale(0.98);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 14px;
+      overflow-y: auto;
+      gap: 10px;
+    }
+
+    .quick-core-bar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .core-pill-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 6px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      font-family: inherit;
+    }
+
+    .core-pill-btn:active { transform: scale(0.95); }
+    .btn-yes { background: linear-gradient(180deg, #22c55e, #16a34a); }
+    .btn-no { background: linear-gradient(180deg, #ef4444, #dc2626); }
+    .btn-help { background: linear-gradient(180deg, #f59e0b, #d97706); }
+    .btn-stop { background: linear-gradient(180deg, #b91c1c, #991b1b); }
+    .btn-want { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+    .btn-play { background: linear-gradient(180deg, #8b5cf6, #7c3aed); }
+    .btn-sleep { background: linear-gradient(180deg, #0284c7, #0369a1); }
+
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      padding-bottom: 20px;
+    }
+
+    .aac-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 3px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .aac-card:active {
+      transform: scale(0.96);
+      border-color: #0284c7;
+    }
+
+    .card-img-wrap {
+      width: 100%;
+      height: 98px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .card-label-box {
+      width: 100%;
+      padding: 6px 4px;
+      background: #ffffff;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-top: 2px solid #f1f5f9;
+    }
+
+    .primary-label {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+
+    .secondary-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0284c7;
+      margin-top: 1px;
+    }
+
+    .edit-photo-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #f59e0b;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    body.edit-mode-active .edit-photo-badge {
+      display: flex;
+    }
+
+    body.edit-mode-active .aac-card {
+      border-style: dashed;
+      border-color: #f59e0b;
+      animation: wiggle 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes wiggle {
+      0% { transform: rotate(-0.5deg); }
+      100% { transform: rotate(0.5deg); }
+    }
+
+    .message-strip {
+      background: #ffffff;
+      border-top: 3px solid #e2e8f0;
+      height: 82px;
+      display: flex;
+      align-items: center;
+      padding: 6px 14px;
+      gap: 12px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+      z-index: 40;
+    }
+
+    .strip-label-box {
+      font-weight: 900;
+      font-size: 0.85rem;
+      color: #64748b;
+      min-width: 60px;
+      line-height: 1.2;
+    }
+
+    .sentence-tokens-scroll {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      height: 100%;
+      padding: 4px 0;
+    }
+
+    .token-bubble {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 4px 8px;
+      height: 56px;
+      position: relative;
+    }
+
+    .token-bubble img {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .token-text {
+      font-weight: 900;
+      font-size: 0.85rem;
+      color: #0f172a;
+    }
+
+    .token-del {
+      background: #ef4444;
+      color: white;
+      border: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 2px;
+    }
+
+    .strip-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-clear {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 8px 12px;
+      font-weight: 800;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75rem;
+      font-family: inherit;
+    }
+
+    .btn-speak {
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      color: #ffffff;
+      border: 2px solid #bbf7d0;
+      border-radius: 18px;
+      padding: 10px 22px;
+      font-weight: 900;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+      font-family: inherit;
+    }
+
+    .btn-speak:active { transform: scale(0.96); }
+
+    .sos-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.96);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 18px;
+      justify-content: space-between;
+    }
+
+    .sos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ffffff;
+    }
+
+    .sos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      margin: 16px 0;
+    }
+
+    .sos-card {
+      border-radius: 24px;
+      border: 5px solid #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      padding: 12px;
+    }
+
+    .sos-card:active { transform: scale(0.96); }
+    .sos-help { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .sos-stop { background: linear-gradient(135deg, #dc2626, #991b1b); }
+    .sos-ouch { background: linear-gradient(135deg, #ec4899, #be185d); }
+    .sos-sleep { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+
+    .sos-icon { font-size: 4rem; margin-bottom: 8px; }
+    .sos-label { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
+    .sos-sub { font-size: 1.2rem; font-weight: 700; opacity: 0.9; }
+
+    .sos-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .call-911-btn {
+      background: #dc2626;
+      color: white;
+      text-decoration: none;
+      border: 3px solid #fecaca;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.6);
+    }
+
+    .btn-back-main {
+      background: #475569;
+      color: white;
+      border: 2px solid #94a3b8;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .settings-modal {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .setting-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setting-label {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .setting-input, .setting-select, .setting-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .parent-mode-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fef3c7;
+      border: 2px solid #fde68a;
+      padding: 12px;
+      border-radius: 16px;
+    }
+
+    #parent-image-input { display: none; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-section">
+      <div class="noah-avatar">👦</div>
+      <div class="brand-title-wrap">
+        <span class="brand-title">Noah's Voice</span>
+        <span class="brand-bubble">AAC Board</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-lang-en" onclick="setLanguage('en')">English</button>
+        <button class="lang-btn" id="btn-lang-fil" onclick="setLanguage('fil')">Filipino</button>
+      </div>
+      <button class="sos-header-btn" onclick="openSOS()">
+        <span>🚨</span> SOS
+      </button>
+      <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <nav class="sidebar">
+      <button class="category-btn active" data-cat="all" onclick="filterCategory('all')">
+        <span class="cat-icon">⭐</span>
+        <span>All Words</span>
+      </button>
+      <button class="category-btn" data-cat="food" onclick="filterCategory('food')">
+        <span class="cat-icon">🍴</span>
+        <span>Food & Drinks</span>
+      </button>
+      <button class="category-btn" data-cat="vehicles" onclick="filterCategory('vehicles')">
+        <span class="cat-icon">🚗</span>
+        <span>Vehicles</span>
+      </button>
+      <button class="category-btn" data-cat="play" onclick="filterCategory('play')">
+        <span class="cat-icon">🏃</span>
+        <span>Play & Fun</span>
+      </button>
+      <button class="category-btn" data-cat="people" onclick="filterCategory('people')">
+        <span class="cat-icon">👥</span>
+        <span>People</span>
+      </button>
+      <button class="category-btn" data-cat="needs" onclick="filterCategory('needs')">
+        <span class="cat-icon">❤️</span>
+        <span>Needs</span>
+      </button>
+      <button class="category-btn" data-cat="feelings" onclick="filterCategory('feelings')">
+        <span class="cat-icon">😊</span>
+        <span>Feelings</span>
+      </button>
+    </nav>
+
+    <main class="main-content">
+      <section class="quick-core-bar">
+        <button class="core-pill-btn btn-yes" onclick="speakQuick('Yes', 'Oo')">👍 YES</button>
+        <button class="core-pill-btn btn-no" onclick="speakQuick('No', 'Hindi')">👎 NO</button>
+        <button class="core-pill-btn btn-help" onclick="speakQuick('Help', 'Tulong')">✋ HELP</button>
+        <button class="core-pill-btn btn-stop" onclick="speakQuick('Stop', 'Tigil')">🛑 STOP</button>
+        <button class="core-pill-btn btn-want" onclick="speakQuick('I want', 'Gusto ko', 'Eye want')">👉 I WANT</button>
+        <button class="core-pill-btn btn-play" onclick="speakQuick('Play', 'Laro')">🎮 PLAY</button>
+        <button class="core-pill-btn btn-sleep" onclick="speakQuick('Sleep', 'Tulog')">😴 SLEEP</button>
+      </section>
+
+      <section class="tiles-grid" id="tiles-container"></section>
+    </main>
+  </div>
+
+  <footer class="message-strip">
+    <div class="strip-label-box">
+      My<br>Message:
+    </div>
+    <div class="sentence-tokens-scroll" id="sentence-container"></div>
+    <div class="strip-actions">
+      <button class="btn-clear" onclick="clearMessage()">
+        <span style="font-size: 1.1rem;">🗑️</span>
+        <span>Clear</span>
+      </button>
+      <button class="btn-speak" onclick="speakMessage()">
+        <span>🔊</span>
+        <span>SPEAK</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- SOS Modal -->
+  <div class="sos-overlay" id="sos-overlay">
+    <div class="sos-header">
+      <div style="font-size: 1.8rem; font-weight: 900; color: #fee2e2;">🚨 EMERGENCY / CRISIS SCREEN</div>
+      <div style="font-size: 1rem; color: #cbd5e1;">Tap one big button to speak immediately</div>
+    </div>
+
+    <div class="sos-grid">
+      <div class="sos-card sos-help" onclick="triggerSOS('Help', 'Tulong')">
+        <div class="sos-icon">✋</div>
+        <div class="sos-label">HELP</div>
+        <div class="sos-sub">TULONG</div>
+      </div>
+      <div class="sos-card sos-stop" onclick="triggerSOS('Stop', 'Tigil')">
+        <div class="sos-icon">🛑</div>
+        <div class="sos-label">STOP</div>
+        <div class="sos-sub">TIGIL</div>
+      </div>
+      <div class="sos-card sos-ouch" onclick="triggerSOS('Ouch', 'Aray')">
+        <div class="sos-icon">🩹</div>
+        <div class="sos-label">OUCH</div>
+        <div class="sos-sub">ARAY</div>
+      </div>
+      <div class="sos-card sos-sleep" onclick="triggerSOS('Sleep', 'Tulog')">
+        <div class="sos-icon">😴</div>
+        <div class="sos-label">SLEEP</div>
+        <div class="sos-sub">TULOG</div>
+      </div>
+    </div>
+
+    <div class="sos-bottom">
+      <button class="btn-back-main" onclick="closeSOS()">⬅️ Back to Main Board</button>
+      <a href="tel:911" class="call-911-btn">📞 CALL 911 (DIALER)</a>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settings-modal" onclick="closeSettings(event)">
+    <div class="settings-modal" onclick="event.stopPropagation()">
+      <div class="modal-title">
+        <span>Settings & Customization</span>
+        <button onclick="closeSettings()" style="border:none;background:transparent;font-size:1.5rem;cursor:pointer;">✕</button>
+      </div>
+
+      <div class="parent-mode-switch">
+        <div>
+          <div style="font-weight: 900; color: #92400e;">✏️ Parent Edit Mode</div>
+          <div style="font-size: 0.75rem; color: #b45309;">Turn ON to tap any card and customize text or upload photos</div>
+        </div>
+        <input type="checkbox" id="edit-mode-toggle" onchange="toggleEditMode(this.checked)" style="width: 24px; height: 24px;">
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">Voice</label>
+        <select class="setting-select" id="voice-select"></select>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">Speech Speed</label>
+        <select class="setting-select" id="rate-select">
+          <option value="0.75">Slow (0.75x)</option>
+          <option value="1.0" selected>Normal (1.0x)</option>
+          <option value="1.2">Fast (1.2x)</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <button class="setting-btn" onclick="testVoice()" style="background: #e0f2fe; color: #0369a1; font-weight: 800; border: none; cursor: pointer;">🔊 Test Voice</button>
+      </div>
+
+      <div class="setting-row">
+        <button class="setting-btn" onclick="toggleFullScreen()" style="background: #f1f5f9; color: #334155; font-weight: 800; border: 2px solid #cbd5e1; cursor: pointer;">⛶ Toggle Full Screen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Editor Modal (Text & Photo) -->
+  <div class="modal-backdrop" id="card-editor-modal" onclick="closeCardEditor(event)">
+    <div class="settings-modal" onclick="event.stopPropagation()">
+      <div class="modal-title">
+        <span>Edit Card Details</span>
+        <button onclick="closeCardEditor()" style="border:none;background:transparent;font-size:1.5rem;cursor:pointer;">✕</button>
+      </div>
+
+      <div style="display: flex; gap: 14px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 14px; border: 1px solid #e2e8f0;">
+        <img id="editor-preview-img" src="" alt="preview" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover;">
+        <div style="flex: 1;">
+          <button class="setting-btn" onclick="triggerPhotoPick()" style="background: #0284c7; color: white; border: none; width: 100%; cursor: pointer; font-size: 0.85rem; padding: 8px;">📷 Upload New Photo</button>
+          <button class="setting-btn" onclick="resetCardImage()" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; width: 100%; cursor: pointer; font-size: 0.75rem; margin-top: 6px; padding: 6px;">Reset Photo</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">English Label (Primary)</label>
+        <input type="text" class="setting-input" id="edit-text-en">
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">Filipino / Secondary Label</label>
+        <input type="text" class="setting-input" id="edit-text-fil">
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label">Pronunciation / Custom Speech (Optional)</label>
+        <input type="text" class="setting-input" id="edit-text-phonetic" placeholder="Leave blank to speak English label">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button class="setting-btn" onclick="saveCardEdits()" style="flex: 2; background: #22c55e; color: white; border: none; font-weight: 800; cursor: pointer;">💾 Save Changes</button>
+        <button class="setting-btn" onclick="resetCardDefaults()" style="flex: 1; background: #ef4444; color: white; border: none; font-size: 0.8rem; cursor: pointer;">Reset All</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="parent-image-input" accept="image/*">
+
+  <script>
+    const DEFAULT_VOCABULARY = [
+      { id: 'milk', en: 'Milk', fil: 'Gatas', cat: 'food', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80' },
+      { id: 'eggs', en: 'Eggs', fil: 'Itlog', cat: 'food', img: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=400&q=80' },
+      { id: 'chicken', en: 'Fried Chicken', fil: 'Manok', cat: 'food', img: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=400&q=80' },
+      { id: 'bread', en: 'Bread', fil: 'Pandesal', cat: 'food', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80' },
+      { id: 'pandesal', en: 'Pandesal', fil: 'Pandesal', cat: 'food', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80' },
+      { id: 'pancake', en: 'Pancake', fil: 'Pancake', cat: 'food', img: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=400&q=80' },
+      { id: 'banana', en: 'Banana', fil: 'Saging', cat: 'food', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'car', en: 'Car', fil: 'Kotse', cat: 'vehicles', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400&q=80' },
+      { id: 'truck', en: 'Truck', fil: 'Truck', cat: 'vehicles', img: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=400&q=80' },
+      { id: 'trampoline', en: 'Trampoline', fil: 'Trampolin', cat: 'play', img: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=400&q=80' },
+      { id: 'jump', en: 'Jump', fil: 'Talon', cat: 'play', img: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=400&q=80' },
+      { id: 'play_card', en: 'Play', fil: 'Laro', cat: 'play', img: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=400&q=80' },
+      { id: 'i_pronoun', en: 'I', fil: 'Ako', cat: 'people', phonetic: 'Eye', img: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80' },
+      { id: 'love', en: 'Love', fil: 'Mahal', cat: 'people', img: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=400&q=80' },
+      { id: 'mama', en: 'Mama', fil: 'Nanay', cat: 'people', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' },
+      { id: 'papa', en: 'Papa', fil: 'Tatay', cat: 'people', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80' },
+      { id: 'tita', en: 'Tita', fil: 'Tita', cat: 'people', img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' },
+      { id: 'tito', en: 'Tito', fil: 'Tito', cat: 'people', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80' },
+      { id: 'ate', en: 'Ate', fil: 'Ate', cat: 'people', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80' },
+      { id: 'kuya', en: 'Kuya', fil: 'Kuya', cat: 'people', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80' },
+      { id: 'atah', en: 'Atah', fil: 'Atah', cat: 'people', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80' },
+      { id: 'grandpa', en: 'Grandpa', fil: 'Lolo', cat: 'people', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'grandma', en: 'Grandma', fil: 'Lola', cat: 'people', img: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=400&q=80' },
+      { id: 'mecca', en: 'Mecca', fil: 'Mecca', cat: 'people', img: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=400&q=80' },
+      { id: 'luna', en: 'Luna', fil: 'Luna', cat: 'people', img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'dog', en: 'Dog', fil: 'Aso', cat: 'people', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80' },
+      { id: 'cat', en: 'Cat', fil: 'Pusa', cat: 'people', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80' },
+      { id: 'ouch', en: 'Ouch', fil: 'Aray', cat: 'needs', img: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=400&q=80' },
+      { id: 'cry', en: 'Cry', fil: 'Iyak', cat: 'needs', img: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&w=400&q=80' },
+      { id: 'sleep', en: 'Sleep', fil: 'Tulog', cat: 'needs', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=400&q=80' },
+      { id: 'please', en: 'Please', fil: 'Pakiusap', cat: 'needs', img: 'https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?auto=format&fit=crop&w=400&q=80' },
+      { id: 'thanks', en: 'Thanks', fil: 'Salamat', cat: 'needs', img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&q=80' },
+      { id: 'sorry', en: 'Sorry', fil: 'Pasensya', cat: 'needs', img: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=400&q=80' },
+      { id: 'happy', en: 'Happy', fil: 'Masaya', cat: 'feelings', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=400&q=80' },
+      { id: 'sad', en: 'Sad', fil: 'Malungkot', cat: 'feelings', img: 'https://images.unsplash.com/photo-1499557354967-2b2d8910bcca?auto=format&fit=crop&w=400&q=80' },
+      { id: 'okay', en: 'Okay', fil: 'Ayos lang', cat: 'feelings', img: 'https://images.unsplash.com/photo-1464746133101-a2c3f88e0dd9?auto=format&fit=crop&w=400&q=80' }
+    ];
+
+    let currentLanguage = 'en';
+    let currentCategory = 'all';
+    let messageTokens = [];
+    let isEditMode = false;
+    let editingItem = null;
+
+    const synth = window.speechSynthesis;
+    let voices = [];
+
+    function populateVoices() {
+      voices = synth.getVoices();
+      const select = document.getElementById('voice-select');
+      select.innerHTML = '';
+      voices.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${v.name} (${v.lang})`;
+        if (v.default || v.lang.startsWith('en')) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    function speakText(text) {
+      if (!text) return;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voiceIndex = document.getElementById('voice-select').value;
+      if (voices[voiceIndex]) utterance.voice = voices[voiceIndex];
+      utterance.rate = parseFloat(document.getElementById('rate-select').value) || 1.0;
+      utterance.pitch = 1.05;
+      synth.speak(utterance);
+    }
+
+    function speakQuick(en, fil, phonetic) {
+      const textToSpeak = currentLanguage === 'fil' ? fil : (phonetic || en);
+      speakText(textToSpeak);
+      addToMessage({
+        id: 'quick_' + Date.now(),
+        en: en,
+        fil: fil,
+        img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%230284c7"><text x="50%" y="60%" font-size="14" text-anchor="middle" fill="white">★</text></svg>'
+      });
+    }
+
+    function getCardData(item) {
+      const customData = localStorage.getItem(`noah_card_${item.id}`);
+      if (customData) {
+        try {
+          return { ...item, ...JSON.parse(customData) };
+        } catch(e) {}
+      }
+      return item;
+    }
+
+    function renderCards() {
+      const container = document.getElementById('tiles-container');
+      container.innerHTML = '';
+
+      const filtered = DEFAULT_VOCABULARY.filter(item => {
+        if (currentCategory === 'all') return true;
+        return item.cat === currentCategory;
+      });
+
+      filtered.forEach(rawItem => {
+        const item = getCardData(rawItem);
+        const card = document.createElement('div');
+        card.className = 'aac-card';
+        card.dataset.id = item.id;
+        card.onclick = () => onCardClick(item);
+
+        card.innerHTML = `
+          <div class="edit-photo-badge" title="Edit Card">✏️</div>
+          <div class="card-img-wrap">
+            <img src="${item.img}" alt="${item.en}" id="img-${item.id}">
+          </div>
+          <div class="card-label-box">
+            <span class="primary-label">${currentLanguage === 'fil' ? item.fil : item.en}</span>
+            <span class="secondary-label">${currentLanguage === 'fil' ? item.en : item.fil}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function onCardClick(item) {
+      if (isEditMode) {
+        openCardEditor(item);
+        return;
+      }
+      const textToSpeak = currentLanguage === 'fil' ? item.fil : (item.phonetic || item.en);
+      speakText(textToSpeak);
+      addToMessage(item);
+    }
+
+    function toggleEditMode(enabled) {
+      isEditMode = enabled;
+      document.body.classList.toggle('edit-mode-active', enabled);
+      renderCards();
+    }
+
+    /* Card Editor Dialog */
+    function openCardEditor(item) {
+      editingItem = getCardData(item);
+      document.getElementById('edit-text-en').value = editingItem.en || '';
+      document.getElementById('edit-text-fil').value = editingItem.fil || '';
+      document.getElementById('edit-text-phonetic').value = editingItem.phonetic || '';
+      document.getElementById('editor-preview-img').src = editingItem.img;
+      document.getElementById('card-editor-modal').style.display = 'flex';
+    }
+
+    function closeCardEditor(e) {
+      if (!e || e.target.id === 'card-editor-modal') {
+        document.getElementById('card-editor-modal').style.display = 'none';
+        editingItem = null;
+      }
+    }
+
+    function triggerPhotoPick() {
+      document.getElementById('parent-image-input').click();
+    }
+
+    document.getElementById('parent-image-input').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file || !editingItem) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const base64Data = event.target.result;
+        editingItem.img = base64Data;
+        document.getElementById('editor-preview-img').src = base64Data;
+      };
+      reader.readAsDataURL(file);
+      this.value = '';
+    });
+
+    function resetCardImage() {
+      if (!editingItem) return;
+      const defaultItem = DEFAULT_VOCABULARY.find(v => v.id === editingItem.id);
+      if (defaultItem) {
+        editingItem.img = defaultItem.img;
+        document.getElementById('editor-preview-img').src = defaultItem.img;
+      }
+    }
+
+    function saveCardEdits() {
+      if (!editingItem) return;
+      const updatedData = {
+        en: document.getElementById('edit-text-en').value.trim() || editingItem.en,
+        fil: document.getElementById('edit-text-fil').value.trim() || editingItem.fil,
+        phonetic: document.getElementById('edit-text-phonetic').value.trim(),
+        img: editingItem.img
+      };
+
+      localStorage.setItem(`noah_card_${editingItem.id}`, JSON.stringify(updatedData));
+      document.getElementById('card-editor-modal').style.display = 'none';
+      editingItem = null;
+      renderCards();
+    }
+
+    function resetCardDefaults() {
+      if (!editingItem) return;
+      localStorage.removeItem(`noah_card_${editingItem.id}`);
+      document.getElementById('card-editor-modal').style.display = 'none';
+      editingItem = null;
+      renderCards();
+    }
+
+    /* Message Building Strip */
+    function addToMessage(item) {
+      messageTokens.push(item);
+      renderSentenceTokens();
+    }
+
+    function renderSentenceTokens() {
+      const container = document.getElementById('sentence-container');
+      container.innerHTML = '';
+
+      messageTokens.forEach((token, index) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'token-bubble';
+
+        bubble.innerHTML = `
+          <img src="${token.img}" alt="${token.en}">
+          <span class="token-text">${currentLanguage === 'fil' ? token.fil : token.en}</span>
+          <button class="token-del" onclick="removeToken(${index}, event)">✕</button>
+        `;
+        container.appendChild(bubble);
+      });
+      container.scrollLeft = container.scrollWidth;
+    }
+
+    function removeToken(index, event) {
+      event.stopPropagation();
+      messageTokens.splice(index, 1);
+      renderSentenceTokens();
+    }
+
+    function clearMessage() {
+      messageTokens = [];
+      renderSentenceTokens();
+      synth.cancel();
+    }
+
+    function speakMessage() {
+      if (messageTokens.length === 0) return;
+      const sentence = messageTokens.map(t => {
+        if (currentLanguage === 'fil') return t.fil;
+        return t.phonetic || t.en;
+      }).join(' ');
+      speakText(sentence);
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+      renderCards();
+    }
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-lang-fil').classList.toggle('active', lang === 'fil');
+      renderCards();
+      renderSentenceTokens();
+    }
+
+    function openSOS() {
+      document.getElementById('sos-overlay').style.display = 'flex';
+      speakText(currentLanguage === 'fil' ? 'Pangangailangan ng tulong' : 'SOS Screen Active');
+    }
+
+    function closeSOS() {
+      document.getElementById('sos-overlay').style.display = 'none';
+      synth.cancel();
+    }
+
+    function triggerSOS(en, fil) {
+      speakText(currentLanguage === 'fil' ? fil : en);
+    }
+
+    function openSettings() {
+      document.getElementById('settings-modal').style.display = 'flex';
+    }
+
+    function closeSettings(e) {
+      if (!e || e.target.id === 'settings-modal') {
+        document.getElementById('settings-modal').style.display = 'none';
+      }
+    }
+
+    function testVoice() {
+      speakText(currentLanguage === 'fil' ? 'Kumusta Noah! Ito ang aking boses.' : 'Hello Noah! This is my voice.');
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populateVoices();
+      renderCards();
+    });
+  </script>
+</body>
+</html>
