@@ -1315,6 +1315,79 @@
       populateVoices();
       loadCardsFromSupabase();
     });
+
+<!-- Existing scripts above -->
+
+    <script>
+      // ==========================================
+      // PHOTO STORAGE CEILING & LIMIT LOGIC
+      // ==========================================
+      function getCustomPhotos() {
+        const stored = localStorage.getItem("noahs_voice_custom_photos");
+        return stored ? JSON.parse(stored) : [];
+      }
+
+      function getPhotoCeiling() {
+        let ceiling = localStorage.getItem("noahs_voice_photo_ceiling");
+        if (ceiling === null) {
+          const currentCount = getCustomPhotos().length;
+          ceiling = currentCount + 2;
+          localStorage.setItem("noahs_voice_photo_ceiling", ceiling);
+        }
+        return parseInt(ceiling, 10);
+      }
+
+      function handleAddPhotoClick() {
+        requireAdminAccess(() => {
+          const photos = getCustomPhotos();
+          const ceiling = getPhotoCeiling();
+          const remaining = ceiling - photos.length;
+
+          if (remaining <= 0) {
+            alert("Photo limit reached. You have already used your 2 additional photo slots. Delete existing photos to upload new ones.");
+            return;
+          }
+
+          // Call your actual drawer/file-input opener here:
+          openAddPhotoDrawer(); 
+        });
+      }
+
+      function saveNewPhoto(photoData) {
+        const photos = getCustomPhotos();
+        const ceiling = getPhotoCeiling();
+
+        if (photos.length >= ceiling) {
+          alert("Cannot save: Photo storage limit reached.");
+          return false;
+        }
+
+        photos.push(photoData);
+        localStorage.setItem("noahs_voice_custom_photos", JSON.stringify(photos));
+        updateStorageBadge();
+        return true;
+      }
+
+      function updateStorageBadge() {
+        const badge = document.getElementById("storageCounterBadge");
+        if (badge) {
+          const photos = getCustomPhotos();
+          const ceiling = getPhotoCeiling();
+          const remaining = Math.max(0, ceiling - photos.length);
+
+          badge.textContent = remaining > 0 
+            ? `${remaining} slot${remaining === 1 ? '' : 's'} remaining` 
+            : "Storage full (0 slots left)";
+          badge.style.color = remaining > 0 ? "#10b981" : "#ef4444";
+        }
+      }
+
+      // Run on initial load to set the counter badge display
+      document.addEventListener("DOMContentLoaded", updateStorageBadge);
+    </script>
+  </body>
+</html>
+    
   </script>
 
 <!-- Caregiver Verification Modal -->
