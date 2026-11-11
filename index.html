@@ -1387,6 +1387,85 @@
     </script>
   </body>
 </html>
+
+
+// ==========================================
+// CAREGIVER 6-DIGIT PIN GATEKEEPER
+// ==========================================
+
+// Change "123456" to your desired 6-digit admin code:
+const CAREGIVER_PIN = "083119"; 
+
+let enteredPin = "";
+let pendingAction = null;
+
+// Opens the keypad modal and queues the action you want to run after unlock
+function requireAdminAccess(actionCallback) {
+  pendingAction = actionCallback;
+  enteredPin = "";
+  updatePinDisplay();
+  
+  const errorEl = document.getElementById("pinErrorMessage");
+  if (errorEl) errorEl.style.display = "none";
+
+  const modalEl = document.getElementById("adminPinModal");
+  if (modalEl) modalEl.style.display = "flex";
+}
+
+// Triggered by keypad buttons (0-9)
+function enterPinDigit(digit) {
+  if (enteredPin.length < 6) {
+    enteredPin += digit;
+    updatePinDisplay();
+  }
+
+  // Automatically triggers check as soon as 6 digits are typed
+  if (enteredPin.length === 6) {
+    verifyAdminPin();
+  }
+}
+
+// Triggered by the "Clear" button
+function clearPin() {
+  enteredPin = "";
+  updatePinDisplay();
+  const errorEl = document.getElementById("pinErrorMessage");
+  if (errorEl) errorEl.style.display = "none";
+}
+
+// Triggered by the "Cancel" button or clicking outside
+function closePinModal() {
+  enteredPin = "";
+  pendingAction = null;
+  const modalEl = document.getElementById("adminPinModal");
+  if (modalEl) modalEl.style.display = "none";
+}
+
+// Updates the bullet dots on screen (e.g. ••••)
+function updatePinDisplay() {
+  const display = document.getElementById("pinDisplay");
+  if (display) {
+    display.textContent = enteredPin.length > 0 
+      ? "•".repeat(enteredPin.length) 
+      : "••••••";
+  }
+}
+
+// Validates against the hardcoded constant
+function verifyAdminPin() {
+  if (enteredPin === CAREGIVER_PIN) {
+    const actionToRun = pendingAction;
+    closePinModal();
+    if (typeof actionToRun === "function") {
+      actionToRun();
+    }
+  } else {
+    const errorEl = document.getElementById("pinErrorMessage");
+    if (errorEl) errorEl.style.display = "block";
+    enteredPin = "";
+    updatePinDisplay();
+  }
+}
     
   </script>
 
