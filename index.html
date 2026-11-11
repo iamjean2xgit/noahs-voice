@@ -1171,7 +1171,7 @@
           if (error) throw error;
         } else {
           const { error } = await sb
-            .from('save-cards')
+            .from('cards')
             .insert([payload]);
           if (error) throw error;
         }
