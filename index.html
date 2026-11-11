@@ -1316,5 +1316,33 @@
       loadCardsFromSupabase();
     });
   </script>
+
+<!-- Caregiver Verification Modal -->
+<div id="adminPinModal" class="pin-overlay" style="display: none;">
+  <div class="pin-dialog">
+    <div class="pin-icon">🔒</div>
+    <h3>Caregiver Verification</h3>
+    <p>Enter the 6-digit PIN to manage photos and cards.</p>
+    
+    <div class="pin-display" id="pinDisplay">••••••</div>
+    
+    <!-- Numeric Keypad -->
+    <div class="keypad-grid">
+      <button type="button" class="key-btn" onclick="enterPinDigit('1')">1</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('2')">2</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('3')">3</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('4')">4</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('5')">5</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('6')">6</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('7')">7</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('8')">8</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('9')">9</button>
+      <button type="button" class="key-btn secondary" onclick="clearPin()">Clear</button>
+      <button type="button" class="key-btn" onclick="enterPinDigit('0')">0</button>
+      <button type="button" class="key-btn cancel" onclick="closePinModal()">Cancel</button>
+    </div>
+    <div id="pinErrorMessage" class="pin-error" style="display: none;">Incorrect PIN. Try again.</div>
+  </div>
+</div>
 </body>
 </html>
